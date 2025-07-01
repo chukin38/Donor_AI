@@ -1,0 +1,6 @@
+.venv/
+models/*.faiss
+models/*.npy
+simulation_results.csv
+radar.png
+kpi_report.pptx
