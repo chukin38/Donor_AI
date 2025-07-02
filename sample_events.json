@@ -1,0 +1,16 @@
+[
+  {
+    "event_id": "hk001",
+    "title": "HK Charity Run 2025",
+    "cause": "Education",
+    "goal_amount": 50000,
+    "prev_years": [{"year": 2024, "attendees": 100, "total_raised": 45000}]
+  },
+  {
+    "event_id": "hk002",
+    "title": "HK Gala Dinner 2025",
+    "cause": "Healthcare",
+    "goal_amount": 100000,
+    "prev_years": [{"year": 2024, "attendees": 150, "total_raised": 120000}]
+  }
+]

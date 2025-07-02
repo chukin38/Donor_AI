@@ -5,6 +5,7 @@ pandas
 faker
 faiss-cpu
 sentence-transformers
+transformers
 requests
 tqdm
 pandera
