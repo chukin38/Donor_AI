@@ -1,0 +1,326 @@
+[
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "mail"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 250,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 500,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "in-person",
+    "tone": "urgent",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "friendly",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "formal",
+    "channel": "mail"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "email"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "sms"
+  },
+  {
+    "ask": 1000,
+    "format": "virtual",
+    "tone": "urgent",
+    "channel": "mail"
+  }
+]

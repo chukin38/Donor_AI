@@ -1,6 +1,18 @@
+# virtual-env
 .venv/
+env/
+
+# large model artefacts
 models/*.faiss
 models/*.npy
+
+# generated outputs
 simulation_results.csv
 radar.png
 kpi_report.pptx
+events_list.json
+donors_1k.csv
+
+# OS / IDE
+.DS_Store
+.idea/
