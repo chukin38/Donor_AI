@@ -10,6 +10,7 @@ from transformers import pipeline
 import variants  # assumes variants.py defines `variants` list
 
 def event_brief(e: dict) -> str:
+    """Return a short description for logging/prompts."""
     return (
         f"{e.get('title', '')} | Cause: {e.get('cause', '')} | "
         f"Goal: HK${e.get('goal_amount', e.get('goal', 'N/A'))} | "
@@ -41,6 +42,7 @@ def simulate_kpi(variant: dict, generator, event: dict, donor_scale: int) -> dic
 
 
 def load_event(path: str, event_id: str) -> dict:
+    """Return the event record matching ``event_id`` from ``path``."""
     events = json.load(open(path, "r", encoding="utf-8"))
     for e in events:
         if str(e.get("event_id")) == str(event_id):
@@ -49,6 +51,7 @@ def load_event(path: str, event_id: str) -> dict:
 
 
 def load_donors(path: str, ids=None, count=None) -> list:
+    """Return donor rows from ``path`` for the given indices or random count."""
     with open(path, newline="", encoding="utf-8") as f:
         rows = list(csv.DictReader(f))
     if ids:
@@ -58,14 +61,16 @@ def load_donors(path: str, ids=None, count=None) -> list:
     return rows
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(description="Simulate KPIs for strategy variants")
-    ap.add_argument("--model", default="gpt2", help="HF model name or path")
-    ap.add_argument("--events_json", required=True, help="Path to events JSON list")
-    ap.add_argument("--event_id", required=True, help="Event ID to simulate")
-    ap.add_argument("--donors_csv", required=True, help="Path to donors CSV")
-    ap.add_argument("--donor_ids", help="Comma-separated donor row indices")
-    ap.add_argument("--donor_count", type=int, help="Randomly sample N donors")
-    args = ap.parse_args()
+    parser = argparse.ArgumentParser(
+        description="Simulate KPIs for strategy variants"
+    )
+    parser.add_argument("--model", default="gpt2", help="HF model name or path")
+    parser.add_argument("--events_json", required=True, help="Path to events JSON list")
+    parser.add_argument("--event_id", required=True, help="Event ID to simulate")
+    parser.add_argument("--donors_csv", required=True, help="Path to donors CSV")
+    parser.add_argument("--donor_ids", help="Comma-separated donor row indices")
+    parser.add_argument("--donor_count", type=int, help="Randomly sample N donors")
+    args = parser.parse_args()
 
     generator = pipeline("text-generation", model=args.model)
 
