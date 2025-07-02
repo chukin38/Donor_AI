@@ -136,6 +136,6 @@ for _ in range(N):
     ))
 
 df = pd.DataFrame(data)
-Path(".venv/output").mkdir(exist_ok=True)
+Path("output").mkdir(exist_ok=True)
 df.to_csv("output/donors_fake.csv", index=False)
 print("✅ 生成完成：output/donors_fake.csv")
