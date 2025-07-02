@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-import requests
+"""Draft grant proposals using a local Gemma model."""
+
 import json
+from transformers import pipeline
 
 # Configuration
-GENERATIVE_SERVER_URL = "http://57.129.18.204:51001"
+MODEL_NAME = "gemma-4b"
+_GENERATOR = pipeline("text-generation", model=MODEL_NAME)
 
 def generate_grant_proposal(grant_schema, org_profile):
     """
@@ -23,24 +26,20 @@ def generate_grant_proposal(grant_schema, org_profile):
         "Return ONLY the proposal text—no JSON, no markdown fences."
     )
 
-    payload = {
-        "input": prompt,
-        "instructions": (
-            "Structure the proposal with clear headings matching the required sections. "
-            "Keep it formal and persuasive."
-        )
-    }
+    instructions = (
+        "Structure the proposal with clear headings matching the required sections. "
+        "Keep it formal and persuasive."
+    )
+    full_prompt = f"{prompt}\n{instructions}"
 
     try:
-        resp = requests.post(
-            f"{GENERATIVE_SERVER_URL}/generate-text",
-            json=payload,
-            timeout=120
-        )
-        resp.raise_for_status()
-        return resp.json()["text"]
+        result = _GENERATOR(full_prompt, max_new_tokens=1024, do_sample=False)
+        text = result[0]["generated_text"]
+        if text.startswith(full_prompt):
+            text = text[len(full_prompt):]
+        return text.strip()
 
-    except requests.exceptions.RequestException as e:
+    except Exception as e:
         return f"Error generating grant proposal: {e}"
 
 if __name__ == "__main__":
