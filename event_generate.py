@@ -2,19 +2,20 @@
 """
 generate_events.py
 ------------------
-以 ChatGPT API 生成 N 筆「捐贈者活動」並存成 JSON 檔
+Use a local Gemma model to generate N fundraising events and save as JSON.
 
-例：
-    python generate_events.py \
-           --num_events 50 \
-           --out_file  data/events_list.json \
-           --api_url   http://57.129.18.204:51001/generate-text
+Example:
+    python generate_events.py \\
+           --num_events 50 \\
+           --out_file  data/events_list.json
 """
 
-import argparse, json, sys, time, uuid
+import argparse, json, sys, time
 from typing import List, Dict, Any
 
-import requests
+from transformers import pipeline
+
+_GENERATOR = None
 
 
 # ---------- 你可以在這裡增刪欄位 ----------
@@ -74,25 +75,19 @@ def build_prompt(num_events: int) -> str:
     )
 
 
-def call_llm(api_url: str, prompt: str, api_key: str = None, timeout: int = 90) -> str:
-    headers = {"Content-Type": "application/json"}
-    if api_key:
-        headers["Authorization"] = f"Bearer {api_key}"
-
-    payload = {
-        "input": prompt,
-        "instructions": ""  # 你原本 API 需要的欄位，可自行調整
-    }
-    resp = requests.post(api_url, headers=headers, json=payload, timeout=timeout)
-    resp.raise_for_status()
-    return resp.json()["text"]
+def call_llm(prompt: str, timeout: int = 90) -> str:
+    result = _GENERATOR(prompt, max_new_tokens=2048, do_sample=False)
+    text = result[0]["generated_text"]
+    if text.startswith(prompt):
+        text = text[len(prompt):]
+    return text.strip()
 
 
-def try_generate(api_url: str, n: int, api_key: str, retries: int = 3, delay: int = 5) -> List[Dict[str, Any]]:
+def try_generate(n: int, retries: int = 3, delay: int = 5) -> List[Dict[str, Any]]:
     prompt = build_prompt(n)
     for attempt in range(1, retries + 1):
         try:
-            raw = call_llm(api_url, prompt, api_key)
+            raw = call_llm(prompt)
             data = json.loads(raw)
             if isinstance(data, list) and len(data) == n:
                 return data
@@ -103,25 +98,21 @@ def try_generate(api_url: str, n: int, api_key: str, retries: int = 3, delay: in
                 time.sleep(delay)
             else:
                 raise
-        except requests.RequestException as e:
-            print(f"⚠️  HTTP error: {e}")
-            if attempt < retries:
-                time.sleep(delay)
-            else:
-                raise
     raise RuntimeError("Failed to generate valid JSON after retries")
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Generate fundraising events via ChatGPT API")
+    ap = argparse.ArgumentParser(description="Generate fundraising events via a local Gemma model")
     ap.add_argument("--num_events", type=int, default=50, help="Number of events to generate")
     ap.add_argument("--out_file", default="events_list.json", help="Output JSON file")
-    ap.add_argument("--api_url", default="http://57.129.18.204:51001/generate-text", help="LLM endpoint")
-    ap.add_argument("--api_key", default=None, help="Optional API key for Authorization header")
+    ap.add_argument("--model", default="gemma-4b", help="HF model name or path")
     args = ap.parse_args()
 
+    global _GENERATOR
+    _GENERATOR = pipeline("text-generation", model=args.model)
+
     try:
-        events = try_generate(args.api_url, args.num_events, args.api_key)
+        events = try_generate(args.num_events)
     except Exception as e:
         print(f"❌  Generation failed: {e}")
         sys.exit(1)
