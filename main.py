@@ -44,7 +44,7 @@ while True:
             "--events_json", "sample_events.json",
             "--event_id", event_id,
             "--donor_csv", "output/donors_fake.csv",
-            "--index_dir", "models",
+
             "--top_k", "5",
         ]
     elif choice == 6:
