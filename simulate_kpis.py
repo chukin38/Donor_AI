@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
+"""Simulate fundraising KPIs using a local language model."""
+
 import argparse
-import requests
 import json
 import csv
 import random
 import tqdm
+from transformers import pipeline
 import variants  # assumes variants.py defines `variants` list
-
-# Configuration
-GENERATIVE_SERVER_URL = "http://57.129.18.204:51001"
 
 def event_brief(e: dict) -> str:
     return (
@@ -18,8 +17,8 @@ def event_brief(e: dict) -> str:
     )
 
 
-def simulate_kpi(variant: dict, event: dict, donor_scale: int) -> dict:
-    """Call LLM endpoint to predict KPIs for one strategy variant."""
+def simulate_kpi(variant: dict, generator, event: dict, donor_scale: int) -> dict:
+    """Generate KPI estimates for one strategy variant."""
     prompt = (
         f"Estimate these KPI metrics for the fundraising strategy:\n"
         f"- Ask Amount: {variant['ask']}\n"
@@ -30,20 +29,13 @@ def simulate_kpi(variant: dict, event: dict, donor_scale: int) -> dict:
         f"- Donors Contacted: {donor_scale}\n"
         "Return ONLY valid JSON with keys: rsvp_pct, conv_rate, avg_gift_hkd, retention_pct."
     )
-    payload = {
-        "input": prompt,
-        "instructions": "Provide numeric values only. No extra text or markdown."
-    }
-
     try:
-        resp = requests.post(
-            f"{GENERATIVE_SERVER_URL}/generate-text",
-            json=payload,
-            timeout=90
-        )
-        resp.raise_for_status()
-        return json.loads(resp.json()["text"].strip())
-    except requests.exceptions.RequestException as e:
+        result = generator(prompt, max_new_tokens=128, do_sample=False)
+        text = result[0]["generated_text"]
+        if text.startswith(prompt):
+            text = text[len(prompt):]
+        return json.loads(text.strip())
+    except Exception as e:
         print(f"❌ Error simulating {variant}: {e}")
         return {"rsvp_pct": 0, "conv_rate": 0, "avg_gift_hkd": 0, "retention_pct": 0}
 
@@ -67,12 +59,15 @@ def load_donors(path: str, ids=None, count=None) -> list:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Simulate KPIs for strategy variants")
+    ap.add_argument("--model", default="gpt2", help="HF model name or path")
     ap.add_argument("--events_json", required=True, help="Path to events JSON list")
     ap.add_argument("--event_id", required=True, help="Event ID to simulate")
     ap.add_argument("--donors_csv", required=True, help="Path to donors CSV")
     ap.add_argument("--donor_ids", help="Comma-separated donor row indices")
     ap.add_argument("--donor_count", type=int, help="Randomly sample N donors")
     args = ap.parse_args()
+
+    generator = pipeline("text-generation", model=args.model)
 
     event = load_event(args.events_json, args.event_id)
     donor_ids = [int(x) for x in args.donor_ids.split(",") if x.strip()] if args.donor_ids else None
@@ -82,7 +77,7 @@ if __name__ == "__main__":
     rows = []
     print("🔁 Running KPI simulation for each variant…")
     for v in tqdm.tqdm(variants.variants[:150], desc="Simulating"):
-        kpi = simulate_kpi(v, event, donor_scale)
+        kpi = simulate_kpi(v, generator, event, donor_scale)
         v.update(kpi)
         revenue = kpi["avg_gift_hkd"] * kpi["conv_rate"]
         v["score"] = round(
