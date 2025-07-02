@@ -5,21 +5,13 @@ import subprocess, sys, textwrap
 task_map = {
     1: ["python", "gen_donor_dataset.py"],
     2: ["python", "build_rag_index.py",
-        "--donor_csv", "donors_1k.csv",
+        "--donor_csv", "output/donors_fake.csv",
         "--out_dir", "models"],
     3: ["python", "event_generate.py"],
     4: ["python", "search_events.py",
         "--index_dir", "models",
-        "--events_json", "events_list.json",
+        "--events_json", "sample_events.json",
         "--top_k", "5"],
-    5: ["python", "match_events.py",
-        "--events_json", "events_list.json",
-        "--donor_csv", "donors_1k.csv",
-        "--index_dir", "models",
-        "--top_k", "5"],
-    6: ["python", "simulate_kpis.py",
-        "--proposals", "variants.json",
-        "--output", "simulation_results.csv"],
     7: ["python", "generate_kpis_report.py"],
     8: ["python", "grant_assistant.py"],
 }
@@ -45,9 +37,28 @@ while True:
         print("Please enter a number."); continue
     if choice == 0:
         sys.exit(0)
-    cmd = task_map.get(choice)
-    if not cmd:
-        print("Invalid choice"); continue
+    if choice == 5:
+        event_id = input("Enter event ID to match (e.g., hk001): ").strip()
+        cmd = [
+            "python", "match_events.py",
+            "--events_json", "sample_events.json",
+            "--event_id", event_id,
+            "--donor_csv", "output/donors_fake.csv",
+            "--index_dir", "models",
+            "--top_k", "5",
+        ]
+    elif choice == 6:
+        event_id = input("Enter event ID for KPI simulation (e.g., hk001): ").strip()
+        cmd = [
+            "python", "simulate_kpis.py",
+            "--events_json", "sample_events.json",
+            "--event_id", event_id,
+            "--donor_csv", "output/donors_fake.csv",
+        ]
+    else:
+        cmd = task_map.get(choice)
+        if not cmd:
+            print("Invalid choice"); continue
     print("\n⇢ Running:", " ".join(cmd))
     try:
         subprocess.run(cmd, check=True)
