@@ -8,7 +8,7 @@ This repository provides a set of small utilities for experimenting with fundrai
 - Build a FAISS index of donors for similarity search (`build_rag_index.py`).
 - Generate fundraising event data via an LLM API (`event_generate.py`).
 - Search donors and events with sentence embeddings (`search_donors.py`, `search_events.py`).
-- Simulate fundraising KPIs with the help of an LLM (`simulate_kpis.py`).
+- Simulate per-event fundraising KPIs using a local LLM (`simulate_kpis.py`).
 - Produce simple KPI reports (`generate_kpis_report.py`).
 - Draft grant proposals (`grant_assistant.py`).
 - A minimal FastAPI wrapper exposing some of the search functionality (`app.py`).
@@ -46,8 +46,11 @@ python search_donors.py \
     --donor_csv output/donors_fake.csv \
     --query "community health" --top_k 5
 
-# 6. Run KPI simulation for different strategy variants
-python simulate_kpis.py
+# 6. Run KPI simulation for a specific event
+python simulate_kpis.py \
+    --events_json sample_events.json \
+    --event_id hk001 \
+    --donor_csv output/donors_fake.csv
 
 # 7. Generate a simple KPI PPTX report
 python generate_kpis_report.py
