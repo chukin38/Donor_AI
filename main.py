@@ -20,7 +20,7 @@ task_map = {
     6: ["python", "simulate_kpis.py",
         "--proposals", "variants.json",
         "--output", "simulation_results.csv"],
-    7: ["python", "generate_kpi_report.py"],
+    7: ["python", "generate_kpis_report.py"],
     8: ["python", "grant_assistant.py"],
 }
 
