@@ -105,7 +105,11 @@ def main():
     ap = argparse.ArgumentParser(description="Generate fundraising events via a local Gemma model")
     ap.add_argument("--num_events", type=int, default=50, help="Number of events to generate")
     ap.add_argument("--out_file", default="events_list.json", help="Output JSON file")
-    ap.add_argument("--model", default="gemma-4b", help="HF model name or path")
+    ap.add_argument(
+        "--model",
+        default="/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt",
+        help="HF model name or path",
+    )
     args = ap.parse_args()
 
     global _GENERATOR

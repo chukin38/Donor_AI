@@ -78,7 +78,11 @@ if __name__ == "__main__":
     ap.add_argument("--event_id", required=True, help="ID of event to simulate")
     ap.add_argument("--donor_csv", default="output/donors_fake.csv", help="CSV of donors")
     ap.add_argument("--scale", type=float, default=1.0, help="Multiplier for baseline attendees")
-    ap.add_argument("--model", default="gpt2", help="HuggingFace model name or path")
+    ap.add_argument(
+        "--model",
+        default="/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt",
+        help="HuggingFace model name or path",
+    )
     ap.add_argument("--out_csv", default="simulation_results.csv", help="Where to save KPI CSV")
     ap.add_argument("--report", default="event_report.txt", help="Where to save text report")
     args = ap.parse_args()
