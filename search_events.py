@@ -6,16 +6,16 @@ MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 def event_to_text(e):
     return (
-        f"{e.get('title','')} | "
-        f"Cause: {e.get('cause','')} | "
-        f"Goal: HK${e.get('goal_amount', e.get('goal','N/A'))} | "
-        f"Date: {e.get('date_start', e.get('date',''))}"
+        f"{e.get('Event_Name', e.get('title',''))} | "
+        f"Cause: {e.get('Cause_Focus', e.get('cause',''))} | "
+        f"Goal: HK${e.get('Goal_Amount', e.get('goal_amount','N/A'))} | "
+        f"Date: {e.get('Event_Date', e.get('date_start',''))}"
     )
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(description='Rank events by aggregate donor similarity')
     ap.add_argument('--index_dir', required=True, help='Folder with donor_vectors.faiss & donor_ids.npy')
-    ap.add_argument('--events_json', required=True, help='JSON file with events list')
+    ap.add_argument('--events_file', required=True, help='CSV or JSON file with events list')
     ap.add_argument('--top_k', type=int, default=5, help='Number of top events to return')
     ap.add_argument('--metric', choices=['mean','sum','count'], default='mean',
                    help="Aggregation metric: mean cosine, sum cosine, or count>0.5 similarity")
@@ -27,7 +27,10 @@ if __name__ == '__main__':
     n_donors = len(donor_ids)
 
     # Load events
-    events = json.load(open(args.events_json, 'r', encoding='utf-8'))
+    if args.events_file.endswith('.csv'):
+        events = pd.read_csv(args.events_file).to_dict(orient='records')
+    else:
+        events = json.load(open(args.events_file, 'r', encoding='utf-8'))
 
     # Embed events
     model = SentenceTransformer(MODEL_NAME)
@@ -52,4 +55,5 @@ if __name__ == '__main__':
     results = sorted(results, key=lambda x: x['score'], reverse=True)[:args.top_k]
     print(f"Top {args.top_k} events by donor similarity ({args.metric}):")
     for ev in results:
-        print(f"- {ev['title']} (Score: {ev['score']})")
+        name = ev.get('Event_Name', ev.get('title',''))
+        print(f"- {name} (Score: {ev['score']})")

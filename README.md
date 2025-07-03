@@ -15,9 +15,9 @@ This repository provides a set of small utilities for experimenting with fundrai
 
 ## Setup
 
-Install Python 3.8+ and the dependencies. These scripts expect a local Gemma
-3 4B model. After downloading the model, update the `--model` argument or
-modify the default path in the scripts (by default
+Install Python 3.8+ and the dependencies. These scripts expect a local Gemma 3‑4B
+model. After downloading the weights, update the `--model` argument or modify
+the default path in the generators (by default
 `/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt` is used):
 
 ```bash
@@ -30,33 +30,33 @@ Below is a common workflow illustrating how the scripts tie together.
 
 ```bash
 # 1. Generate donors
-python gen_donor_dataset.py            # writes output/donors_fake.csv
+python gen_donor_dataset.py            # writes output/synthetic_donors.csv
 
 # 2. Build the donor similarity index
 python build_rag_index.py \
-    --donor_csv output/donors_fake.csv \
+    --donor_csv output/synthetic_donors.csv \
     --out_dir models
 
 # 3. (Optional) generate fundraising events via LLM
 python event_generate.py \
-    --num_events 50 \
-    --out_file events_list.json \
+    --num_rows 50 \
+    --out_file synthetic_events.csv \
     --model /Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt
 
 # 4. Rank events based on donor affinity
-python search_events.py --index_dir models --events_json events_list.json
+python search_events.py --index_dir models --events_file synthetic_events.csv
 
 # 5. Search donors for a given text query
 python search_donors.py \
     --index_dir models \
-    --donor_csv output/donors_fake.csv \
+    --donor_csv output/synthetic_donors.csv \
     --query "community health" --top_k 5
 
 # 6. Run KPI simulation for a specific event
 python simulate_kpis.py \
     --events_json sample_events.json \
     --event_id hk001 \
-    --donor_csv output/donors_fake.csv \
+    --donor_csv output/synthetic_donors.csv \
     --model /Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt
 
 # 7. Generate a simple KPI PPTX report
