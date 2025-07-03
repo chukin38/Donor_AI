@@ -5,7 +5,7 @@ import json
 from transformers import pipeline
 
 # Configuration
-MODEL_NAME = "gemma-4b"
+MODEL_NAME = "/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt"
 _GENERATOR = pipeline("text-generation", model=MODEL_NAME)
 
 def generate_grant_proposal(grant_schema, org_profile):

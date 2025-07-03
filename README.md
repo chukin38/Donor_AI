@@ -15,7 +15,10 @@ This repository provides a set of small utilities for experimenting with fundrai
 
 ## Setup
 
-Install Python 3.8+ and the dependencies:
+Install Python 3.8+ and the dependencies. These scripts expect a local Gemma
+3 4B model. After downloading the model, update the `--model` argument or
+modify the default path in the scripts (by default
+`/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt` is used):
 
 ```bash
 pip install -r requirements.txt
@@ -35,7 +38,10 @@ python build_rag_index.py \
     --out_dir models
 
 # 3. (Optional) generate fundraising events via LLM
-python event_generate.py --num_events 50 --out_file events_list.json
+python event_generate.py \
+    --num_events 50 \
+    --out_file events_list.json \
+    --model /Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt
 
 # 4. Rank events based on donor affinity
 python search_events.py --index_dir models --events_json events_list.json
@@ -50,7 +56,8 @@ python search_donors.py \
 python simulate_kpis.py \
     --events_json sample_events.json \
     --event_id hk001 \
-    --donor_csv output/donors_fake.csv
+    --donor_csv output/donors_fake.csv \
+    --model /Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt
 
 # 7. Generate a simple KPI PPTX report
 python generate_kpis_report.py
