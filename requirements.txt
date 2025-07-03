@@ -3,6 +3,7 @@ uvicorn
 numpy
 pandas
 faker
+openai
 faiss-cpu
 sentence-transformers
 transformers
