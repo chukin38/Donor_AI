@@ -1,131 +1,60 @@
 #!/usr/bin/env python3
-"""
-generate_events.py
-------------------
-Use a local Gemma model to generate N fundraising events and save as JSON.
+"""Generate fundraising event data using the OpenAI API."""
 
-Example:
-    python generate_events.py \\
-           --num_events 50 \\
-           --out_file  data/events_list.json
-"""
+import argparse
+from pathlib import Path
 
-import argparse, json, sys, time
-from typing import List, Dict, Any
-
-from transformers import pipeline
-
-_GENERATOR = None
+import pandas as pd
+from openai import OpenAI
 
 
-# ---------- 你可以在這裡增刪欄位 ----------
-JSON_SCHEMA = {
-    "event_id": "string (UUID)",
-    "title": "string",
-    "description": "string",
-    "format": "string  # e.g. Gala Dinner / Charity Run / Webinar",
-    "venue": {
-        "name": "string",
-        "city": "string",
-        "lat": "float",
-        "lon": "float"
-    },
-    "date_start": "ISO-8601 datetime",
-    "date_end": "ISO-8601 datetime",
-    "cause": "string",
-    "sub_cause": "string",
-    "keywords": ["string"],
-    "target_segments": ["string"],
-    "religious_affinity": "string or null",
-    "age_range": ["int(min), int(max)"],
-    "language": "string  # e.g. en / zh / zh-HK",
-    "goal_amount": "int  # in USD",
-    "donation_tiers": [
-        {"label": "string", "min": "int"}
-    ],
-    "volunteer_slots": "int",
-    "comm_channels": ["string  # e.g. Email, SMS"],
-    "send_schedule": {
-        "save_the_date": "date",
-        "reminder": "date"
-    },
-    "prev_years": [
-        {"year": "int", "attendees": "int", "total_raised": "int"}
-    ],
-    "sponsor_names": ["string"],
-    "matching_ratio": "float",
-    "tax_deductible": "boolean"
-}
-# ----------------------------------------
+def generate_csv(model: str, prompt: str, num_rows: int, max_retries: int = 3) -> pd.DataFrame:
+    client = OpenAI()
+    system_msg = {"role": "system", "content": "You are a data-generation engine. Output ONLY CSV."}
+    user_msg = {"role": "user", "content": prompt.replace("{NUM_ROWS}", str(num_rows))}
+
+    for _ in range(max_retries):
+        rsp = client.chat.completions.create(model=model, messages=[system_msg, user_msg], temperature=0.4)
+        text = rsp.choices[0].message.content
+        if "```csv" in text:
+            csv_block = text.split("```csv")[1].split("```")[0].strip()
+            try:
+                return pd.read_csv(pd.compat.StringIO(csv_block))
+            except Exception as e:
+                print("Parse error:", e)
+    raise ValueError("Failed to obtain valid CSV.")
 
 
-def build_prompt(num_events: int) -> str:
-    """產生給 LLM 的提示詞 (英文較穩定)"""
-    schema_str = json.dumps(JSON_SCHEMA, indent=2)
-    return (
-        f"You are a fundraising event planner.\n"
-        f"Generate a JSON array containing exactly {num_events} different fundraising events. "
-        f"Each element must strictly follow the following JSON schema (no extra keys, no comments):\n"
-        f"{schema_str}\n\n"
-        f"Rules:\n"
-        f"1. Use realistic data; vary cause, format, target_segments, language.\n"
-        f"2. Use ISO-8601 for all datetimes, UTC+08:00 timezone preferred.\n"
-        f"3. Generate unique UUIDv4 for event_id.\n"
-        f"4. Output ONLY valid JSON (no markdown, no code fences, no explanation).\n"
-    )
-
-
-def call_llm(prompt: str, timeout: int = 90) -> str:
-    result = _GENERATOR(prompt, max_new_tokens=2048, do_sample=False)
-    text = result[0]["generated_text"]
-    if text.startswith(prompt):
-        text = text[len(prompt):]
-    return text.strip()
-
-
-def try_generate(n: int, retries: int = 3, delay: int = 5) -> List[Dict[str, Any]]:
-    prompt = build_prompt(n)
-    for attempt in range(1, retries + 1):
-        try:
-            raw = call_llm(prompt)
-            data = json.loads(raw)
-            if isinstance(data, list) and len(data) == n:
-                return data
-            raise ValueError(f"Returned JSON is not a list[{n}]")
-        except (json.JSONDecodeError, ValueError) as e:
-            print(f"⚠️  Attempt {attempt}/{retries} failed: {e}")
-            if attempt < retries:
-                time.sleep(delay)
-            else:
-                raise
-    raise RuntimeError("Failed to generate valid JSON after retries")
-
-
-def main():
-    ap = argparse.ArgumentParser(description="Generate fundraising events via a local Gemma model")
-    ap.add_argument("--num_events", type=int, default=50, help="Number of events to generate")
-    ap.add_argument("--out_file", default="events_list.json", help="Output JSON file")
-    ap.add_argument(
-        "--model",
-        default="/Users/solomonchu/PycharmProjects/Project_Donor/gemma-3-4b-pt",
-        help="HF model name or path",
-    )
-    args = ap.parse_args()
-
-    global _GENERATOR
-    _GENERATOR = pipeline("text-generation", model=args.model)
-
-    try:
-        events = try_generate(args.num_events)
-    except Exception as e:
-        print(f"❌  Generation failed: {e}")
-        sys.exit(1)
-
-    with open(args.out_file, "w", encoding="utf-8") as f:
-        json.dump(events, f, ensure_ascii=False, indent=2)
-
-    print(f"✅  Generated {len(events)} events → {args.out_file}")
+def validate(df: pd.DataFrame, columns: list, num_rows: int):
+    assert list(df.columns) == columns, "Header mismatch"
+    assert len(df) == num_rows, "Row count mismatch"
+    assert df.isnull().sum().sum() == 0, "Null values detected"
+    assert df["Event_Name"].is_unique, "Event names must be unique"
 
 
 if __name__ == "__main__":
-    main()
+    ap = argparse.ArgumentParser(description="Generate fundraising events via OpenAI")
+    ap.add_argument("--model", default="gpt-4o-mini", help="OpenAI model name")
+    ap.add_argument("--num_rows", type=int, default=20, help="Number of events")
+    ap.add_argument("--out_file", default="synthetic_events.csv", help="Output CSV file")
+    args = ap.parse_args()
+
+    prompt = Path("event_schema_prompt.txt").read_text()
+    df = generate_csv(args.model, prompt, args.num_rows)
+
+    columns = [
+        "Event_Name", "Event_Type", "Cause_Focus", "Target_Audience", "Location", "Goal_Amount", "Ticket_Price", "Event_Date",
+        "Description", "Organizer", "Event_Duration", "Expected_Attendance", "Sponsorship_Tiers", "VIP_Package_Price", "Dress_Code",
+        "Language", "Catering_Type", "Entertainment", "Networking_Opportunities", "Media_Coverage", "Registration_Deadline",
+        "Early_Bird_Discount", "Group_Discount", "Corporate_Sponsorship_Available", "Volunteer_Opportunities",
+        "Accessibility_Features", "Parking_Available", "Public_Transport_Access", "Weather_Contingency", "Follow_Up_Events",
+        "Impact_Metrics", "Previous_Year_Attendance", "Previous_Year_Funds_Raised", "Celebrity_Guests", "Keynote_Speakers",
+        "Workshop_Sessions", "Silent_Auction", "Live_Auction", "Raffle_Prizes", "Photo_Opportunities", "Social_Media_Hashtag",
+        "Live_Streaming", "Recording_Available", "Tax_Deductible", "Employer_Matching_Eligible", "Payment_Methods", "Refund_Policy",
+        "Age_Restrictions", "Dietary_Accommodations", "Cultural_Considerations", "Sustainability_Initiatives"
+    ]
+    validate(df, columns, args.num_rows)
+
+    Path("output").mkdir(exist_ok=True)
+    df.to_csv(Path("output") / args.out_file, index=False)
+    print(f"✅ Generated {len(df)} events → output/{args.out_file}")

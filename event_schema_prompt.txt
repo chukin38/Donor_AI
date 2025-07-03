@@ -1,0 +1,9 @@
+Schema (51 columns):
+Event_Name, Event_Type, Cause_Focus, Target_Audience, Location, Goal_Amount, Ticket_Price, Event_Date, Description, Organizer, Event_Duration, Expected_Attendance, Sponsorship_Tiers, VIP_Package_Price, Dress_Code, Language, Catering_Type, Entertainment, Networking_Opportunities, Media_Coverage, Registration_Deadline, Early_Bird_Discount, Group_Discount, Corporate_Sponsorship_Available, Volunteer_Opportunities, Accessibility_Features, Parking_Available, Public_Transport_Access, Weather_Contingency, Follow_Up_Events, Impact_Metrics, Previous_Year_Attendance, Previous_Year_Funds_Raised, Celebrity_Guests, Keynote_Speakers, Workshop_Sessions, Silent_Auction, Live_Auction, Raffle_Prizes, Photo_Opportunities, Social_Media_Hashtag, Live_Streaming, Recording_Available, Tax_Deductible, Employer_Matching_Eligible, Payment_Methods, Refund_Policy, Age_Restrictions, Dietary_Accommodations, Cultural_Considerations, Sustainability_Initiatives
+Rules:
+* Follow shared rules 1-9.
+* Galas must have Ticket_Price > 2000. Community events < 500.
+* Suggest Goal_Amount ≈ Expected_Attendance × Ticket_Price × 0.8 unless Ticket_Price is 0.
+* Use realistic Hong Kong context, Chinese names + Latin transliteration.
+* num_rows = {NUM_ROWS}
+Return the CSV in a single markdown code block.

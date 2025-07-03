@@ -1,0 +1,9 @@
+Schema (39 columns):
+Name, Age, Gender, Location, Household_Income, Education_Level, Occupation, Industry_Sector, Marital_Status, Parental_Status, Ethnicity, Language_Preference, Religion, Political_Affiliation, Lifetime_Donation_Amount, Average_Gift, First_Gift_Date, Last_Gift_Date, Donation_Frequency, Preferred_Donation_Channel, Payment_Method, Recurring_Donor, Employer_Matching_Eligible, Cause_Interest, Secondary_Cause_Interest, Event_Attendance, Volunteer_Hours, Email_Open_Rate, Social_Media_Engagement, Communication_Pref, Primary_Cause_Interest, Hobbies_Interests, Life_Stage, Previous_Nonprofit_Affiliations, Values_Alignment, Estimated_Net_Worth, Donor_LTV_Score, Major_Gift_Likelihood, Donation_History
+Rules:
+* Follow shared rules 1-9.
+* Age 18-35 -> Early Career, 35-55 -> Mid Career, 55+ -> Retired / Legacy.
+* Average_Gift × Donation_Frequency ≤ Lifetime_Donation_Amount.
+* Use realistic Hong Kong context, Chinese names + Latin transliteration.
+* num_rows = {NUM_ROWS}
+Return the CSV in a single markdown code block.
